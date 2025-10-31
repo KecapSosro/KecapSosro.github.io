@@ -1,0 +1,2002 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NAWALA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: linear-gradient(135deg, #e8f4f8 0%, #d1e9f6 50%, #b8dff5 100%);
+            --bg-card: rgba(255, 255, 255, 0.9);
+            --color-primary: #0288d1;
+            --color-secondary: #03a9f4;
+            --color-accent: #00bcd4;
+            --color-success: #4caf50;
+            --color-warning: #ff9800;
+            --color-danger: #f44336;
+            --text-primary: #01579b;
+            --text-secondary: #0277bd;
+            --border-glow: rgba(2, 136, 209, 0.25);
+            --shadow-card: 0 10px 40px rgba(2, 136, 209, 0.12);
+        }
+
+        body.dark-mode {
+            --bg-primary: linear-gradient(135deg, #0a1628 0%, #020812 50%, #000000 100%);
+            --bg-card: rgba(10, 22, 40, 0.85);
+            --color-primary: #00d4ff;
+            --color-secondary: #0099cc;
+            --color-accent: #00ffaa;
+            --text-primary: #ffffff;
+            --text-secondary: #b3e5fc;
+            --border-glow: rgba(0, 212, 255, 0.5);
+            --shadow-card: 0 8px 32px rgba(0, 212, 255, 0.3);
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: all 0.5s ease;
+        }
+
+        .tech-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-image: 
+                linear-gradient(rgba(2, 136, 209, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(2, 136, 209, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+        }
+
+        body.dark-mode .tech-bg {
+            background-image: 
+                linear-gradient(rgba(0, 212, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 212, 255, 0.1) 1px, transparent 1px);
+        }
+
+        @keyframes gridMove {
+            0% { background-position: 0 0; }
+            100% { background-position: 50px 50px; }
+        }
+
+        .particle {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            background: var(--color-primary);
+            border-radius: 50%;
+            opacity: 0.5;
+            box-shadow: 0 0 10px var(--color-primary);
+            animation: float-particle linear infinite;
+        }
+
+        @keyframes float-particle {
+            0% {
+                transform: translateY(100vh) translateX(0) scale(0);
+                opacity: 0;
+            }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% {
+                transform: translateY(-10vh) translateX(50px) scale(1.2);
+                opacity: 0;
+            }
+        }
+
+        #splash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0288d1, #00bcd4);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: splashFadeOut 0.5s ease 2s forwards;
+        }
+
+        @keyframes splashFadeOut {
+            to {
+                opacity: 0;
+                visibility: hidden;
+                pointer-events: none;
+            }
+        }
+
+        .splash-logo {
+            animation: logoScale 1.5s ease-in-out;
+            filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.8));
+            max-width: 300px;
+            width: 80%;
+        }
+
+        .splash-logo img {
+            width: 100%;
+            height: auto;
+        }
+
+        @keyframes logoScale {
+            0%, 100% { transform: scale(0.8); }
+            50% { transform: scale(1.2); }
+        }
+
+        header {
+            background: var(--bg-card);
+            backdrop-filter: blur(15px);
+            border-bottom: 2px solid var(--color-primary);
+            padding: clamp(0.8rem, 2vw, 1.2rem) clamp(1rem, 3vw, 2rem);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-card);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: clamp(0.8rem, 2vw, 1.5rem);
+            flex-wrap: wrap;
+        }
+
+        .logo-container {
+            display: flex;
+            gap: clamp(0.5rem, 1vw, 1rem);
+            align-items: center;
+        }
+
+        .logo {
+            width: clamp(35px, 8vw, 50px);
+            height: clamp(35px, 8vw, 50px);
+            border: 2px solid var(--color-accent);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px var(--border-glow);
+            transition: all 0.3s;
+            cursor: pointer;
+            overflow: hidden;
+            background: white;
+            padding: 3px;
+        }
+
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .logo:hover {
+            transform: translateY(-5px) rotate(5deg) scale(1.05);
+        }
+
+        .site-title {
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(1rem, 4vw, 1.6rem);
+            font-weight: 900;
+            color: var(--color-primary);
+            letter-spacing: clamp(1px, 0.3vw, 3px);
+            text-shadow: 1px 1px 3px var(--border-glow);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: clamp(0.5rem, 1.5vw, 1rem);
+        }
+
+        .clock-display {
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(0.7rem, 2vw, 0.9rem);
+            font-weight: 700;
+            color: var(--color-accent);
+            background: var(--bg-card);
+            padding: clamp(0.4rem, 1vw, 0.6rem) clamp(0.8rem, 2vw, 1rem);
+            border-radius: 8px;
+            border: 2px solid var(--color-accent);
+            letter-spacing: 1px;
+            box-shadow: 0 0 10px var(--border-glow);
+        }
+
+        .menu-btn {
+            background: transparent;
+            border: 2px solid var(--color-primary);
+            border-radius: 8px;
+            width: clamp(35px, 8vw, 42px);
+            height: clamp(35px, 8vw, 42px);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.3s;
+        }
+
+        .menu-btn:hover {
+            background: var(--color-primary);
+            transform: rotate(90deg);
+        }
+
+        .menu-btn span {
+            width: 18px;
+            height: 2px;
+            background: var(--color-primary);
+            border-radius: 2px;
+        }
+
+        .menu-btn:hover span {
+            background: white;
+        }
+
+        .dropdown {
+            position: absolute;
+            top: clamp(60px, 12vw, 75px);
+            right: clamp(1rem, 3vw, 2rem);
+            background: var(--bg-card);
+            backdrop-filter: blur(15px);
+            border: 2px solid var(--color-primary);
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: 0 8px 40px var(--border-glow);
+            display: none;
+            min-width: clamp(180px, 40vw, 220px);
+            z-index: 200;
+        }
+
+        .dropdown.active {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dropdown-item {
+            font-family: 'Orbitron', monospace;
+            padding: clamp(0.7rem, 2vw, 0.85rem);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            border: 1px solid transparent;
+            font-weight: 500;
+            font-size: clamp(0.8rem, 2vw, 0.95rem);
+        }
+
+        .dropdown-item:hover {
+            background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+            color: white;
+            transform: translateX(8px);
+        }
+
+        .admin-info {
+            background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .admin-badge {
+            display: inline-block;
+            padding: 0.5rem 1.2rem;
+            background: white;
+            color: var(--color-primary);
+            border-radius: 20px;
+            font-weight: 900;
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(0.75rem, 2vw, 0.85rem);
+            letter-spacing: 2px;
+        }
+
+        .announce-mute {
+            position: fixed;
+            bottom: clamp(1.5rem, 4vw, 2rem);
+            right: clamp(1.5rem, 4vw, 2rem);
+            width: clamp(45px, 10vw, 55px);
+            height: clamp(45px, 10vw, 55px);
+            background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+            border: 3px solid white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 500;
+            transition: all 0.3s;
+            font-size: clamp(1.2rem, 3.5vw, 1.4rem);
+            box-shadow: 0 4px 20px var(--border-glow);
+        }
+
+        .announce-mute:hover {
+            transform: scale(1.1);
+        }
+
+        .announce-mute.muted {
+            background: linear-gradient(135deg, #f44336, #e57373);
+        }
+
+        .auth-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(2, 136, 209, 0.3);
+            backdrop-filter: blur(15px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .auth-modal.active {
+            display: flex;
+        }
+
+        .auth-container {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border: 3px solid var(--color-primary);
+            border-radius: 20px;
+            padding: clamp(2rem, 5vw, 3rem);
+            max-width: 450px;
+            width: 100%;
+            box-shadow: 0 10px 60px var(--border-glow);
+            animation: popIn 0.3s ease;
+            position: relative;
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: clamp(1.5rem, 5vw, 2rem);
+            color: var(--color-primary);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .close-modal:hover {
+            color: var(--color-danger);
+            transform: rotate(90deg);
+        }
+
+        .auth-container h2 {
+            font-family: 'Orbitron', monospace;
+            color: var(--color-primary);
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: clamp(1.5rem, 5vw, 2rem);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            color: var(--text-primary);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(0.8rem, 2vw, 0.9rem);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: clamp(0.7rem, 2vw, 0.9rem);
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid var(--color-primary);
+            border-radius: 8px;
+            font-size: clamp(0.9rem, 2vw, 1rem);
+            color: var(--text-primary);
+            transition: all 0.3s;
+        }
+
+        body.dark-mode .form-group input {
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--color-accent);
+            box-shadow: 0 0 15px var(--border-glow);
+        }
+
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1rem;
+            padding: 0 0.5rem;
+        }
+
+        .volume-slider {
+            flex: 1;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 8px;
+            background: rgba(150, 150, 150, 0.3);
+            border-radius: 5px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--color-primary);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px var(--border-glow);
+            transition: all 0.2s;
+        }
+
+        .volume-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 0 15px var(--color-primary);
+        }
+
+        .volume-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: var(--color-primary);
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 0 10px var(--border-glow);
+            transition: all 0.2s;
+        }
+
+        .volume-slider::-moz-range-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 0 15px var(--color-primary);
+        }
+
+        .volume-value {
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            color: var(--color-primary);
+            min-width: 45px;
+            text-align: center;
+            font-size: clamp(0.9rem, 2vw, 1rem);
+        }
+
+        .btn {
+            width: 100%;
+            padding: clamp(0.8rem, 2.5vw, 1rem);
+            background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: clamp(1rem, 2.5vw, 1.1rem);
+            font-weight: 700;
+            font-family: 'Orbitron', monospace;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 1rem;
+            letter-spacing: 2px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px var(--border-glow);
+        }
+
+        .fullscreen-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-primary);
+            z-index: 2000;
+            overflow-y: auto;
+            padding: clamp(1rem, 3vw, 2rem);
+        }
+
+        .fullscreen-modal.active {
+            display: block;
+        }
+
+        .fullscreen-content {
+            max-width: 900px;
+            margin: clamp(2rem, 5vw, 4rem) auto;
+        }
+
+        .fullscreen-close {
+            position: fixed;
+            top: clamp(1rem, 3vw, 2rem);
+            right: clamp(1rem, 3vw, 2rem);
+            background: var(--color-danger);
+            border: 3px solid white;
+            color: white;
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            width: clamp(50px, 10vw, 60px);
+            height: clamp(50px, 10vw, 60px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Orbitron', monospace;
+            font-weight: 900;
+            z-index: 2001;
+        }
+
+        .fullscreen-close:hover {
+            transform: rotate(90deg) scale(1.1);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 clamp(1rem, 3vw, 2rem);
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .holo-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(15px);
+            border: 2px solid var(--color-primary);
+            border-radius: 18px;
+            padding: clamp(1.5rem, 3vw, 2rem);
+            box-shadow: var(--shadow-card);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .holo-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(2, 136, 209, 0.08), transparent);
+            animation: holo-shine 5s linear infinite;
+        }
+
+        body.dark-mode .holo-card::before {
+            background: linear-gradient(45deg, transparent, rgba(0, 212, 255, 0.15), transparent);
+        }
+
+        @keyframes holo-shine {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .holo-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 45px var(--border-glow);
+        }
+
+        .welcome {
+            text-align: center;
+            padding: clamp(2rem, 5vw, 3.5rem) clamp(1rem, 3vw, 2rem);
+            margin-bottom: 2.5rem;
+        }
+
+        .welcome h1 {
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(2rem, 8vw, 3.5rem);
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: clamp(2px, 1vw, 4px);
+        }
+
+        .welcome h2 {
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(1.2rem, 5vw, 2rem);
+            color: var(--color-accent);
+            margin-bottom: 1rem;
+            letter-spacing: clamp(1px, 0.5vw, 2px);
+        }
+
+        .welcome p {
+            font-size: clamp(1rem, 3vw, 1.2rem);
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+            gap: clamp(1rem, 3vw, 1.8rem);
+            margin: 2rem 0;
+        }
+
+        .metric-card h3 {
+            font-family: 'Orbitron', monospace;
+            color: var(--color-primary);
+            margin-bottom: 1rem;
+            font-size: clamp(0.9rem, 2vw, 1.05rem);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        .metric-value {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(1.8rem, 5vw, 2.5rem);
+            font-weight: 900;
+            color: var(--color-primary);
+            z-index: 10;
+        }
+
+        .chart-container {
+            position: relative;
+            height: clamp(150px, 30vw, 200px);
+        }
+
+        .section-title {
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(1.5rem, 5vw, 2.2rem);
+            color: var(--color-primary);
+            margin-bottom: 2.5rem;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: clamp(2px, 1vw, 4px);
+        }
+
+        .subtitle {
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(1.2rem, 4vw, 1.6rem);
+            color: var(--color-accent);
+            margin: 2.5rem 0 1.5rem;
+            text-align: center;
+            letter-spacing: clamp(1px, 0.5vw, 2px);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+            gap: clamp(1.5rem, 3vw, 2rem);
+            margin: 2rem 0;
+        }
+
+        .info-item {
+            cursor: pointer;
+        }
+
+        .info-item img {
+            width: 100%;
+            height: clamp(180px, 30vw, 220px);
+            object-fit: cover;
+            border-radius: 15px;
+            margin-bottom: 1.5rem;
+            border: 2px solid var(--color-primary);
+        }
+
+        .info-item h3 {
+            font-family: 'Orbitron', monospace;
+            color: var(--color-accent);
+            margin-bottom: 1rem;
+            font-size: clamp(1.1rem, 3vw, 1.25rem);
+        }
+
+        .info-item p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            font-size: clamp(0.9rem, 2vw, 1rem);
+        }
+
+        .graph-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(450px, 100%), 1fr));
+            gap: clamp(1.5rem, 3vw, 2rem);
+            margin: 2rem 0;
+        }
+
+        .graph-card h3 {
+            font-family: 'Orbitron', monospace;
+            color: var(--color-primary);
+            margin-bottom: 1.5rem;
+            font-size: clamp(1rem, 2.5vw, 1.15rem);
+        }
+
+        .graph-container {
+            position: relative;
+            height: clamp(250px, 40vw, 300px);
+        }
+
+        .toggle-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            padding: 2rem;
+        }
+
+        .toggle-container h3 {
+            font-family: 'Orbitron', monospace;
+            color: var(--color-primary);
+            font-size: clamp(1.2rem, 3vw, 1.4rem);
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: clamp(100px, 20vw, 115px);
+            height: clamp(50px, 10vw, 58px);
+            background: rgba(150, 150, 150, 0.25);
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid var(--color-primary);
+        }
+
+        .toggle-switch.active {
+            background: linear-gradient(135deg, var(--color-success), var(--color-accent));
+            box-shadow: 0 0 25px var(--color-success);
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            width: clamp(36px, 7vw, 44px);
+            height: clamp(36px, 7vw, 44px);
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(clamp(50px, 10vw, 57px));
+        }
+
+        .status-indicator {
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(1.1rem, 3vw, 1.25rem);
+            font-weight: 700;
+            color: var(--color-primary);
+        }
+
+        .settings-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: clamp(1.5rem, 3vw, 2rem);
+            margin-bottom: 1.5rem;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .setting-item h3 {
+            font-family: 'Orbitron', monospace;
+            color: var(--color-accent);
+            font-size: clamp(1rem, 2.5vw, 1.15rem);
+            margin-bottom: 0.5rem;
+        }
+
+        .setting-item p {
+            color: var(--text-secondary);
+            font-size: clamp(0.85rem, 2vw, 0.95rem);
+        }
+
+        .nawala-device {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto 3rem;
+            opacity: 0;
+            transform: translateY(-100px);
+        }
+
+        .nawala-device.visible {
+            animation: deviceFall 1s ease-out forwards;
+        }
+
+        @keyframes deviceFall {
+            0% {
+                opacity: 0;
+                transform: translateY(-100px) rotate(-5deg);
+            }
+            60% {
+                transform: translateY(20px) rotate(2deg);
+            }
+            80% {
+                transform: translateY(-10px) rotate(-1deg);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) rotate(0deg);
+            }
+        }
+
+        .component-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr));
+            gap: clamp(1.2rem, 3vw, 1.8rem);
+            margin-top: 3rem;
+            opacity: 0;
+            transform: translateY(40px);
+        }
+
+        .component-grid.visible {
+            animation: fadeInUp 0.8s ease-out 0.5s forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .component-card {
+            background: var(--bg-card);
+            border: 2px solid var(--color-primary);
+            border-radius: 15px;
+            padding: 1.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            box-shadow: var(--shadow-card);
+        }
+
+        .component-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 50px var(--border-glow);
+            border-color: var(--color-accent);
+        }
+
+        .component-icon {
+            font-size: clamp(2.5rem, 8vw, 3.5rem);
+            margin-bottom: 1rem;
+        }
+
+        .component-card h3 {
+            font-family: 'Orbitron', monospace;
+            color: var(--color-primary);
+            font-size: clamp(1.1rem, 3vw, 1.3rem);
+            margin-bottom: 0.8rem;
+            letter-spacing: 1px;
+        }
+
+        .component-card p {
+            color: var(--text-secondary);
+            font-size: clamp(0.85rem, 2vw, 0.95rem);
+            line-height: 1.6;
+        }
+
+        .component-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .component-modal.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .component-modal-content {
+            background: var(--bg-card);
+            border: 3px solid var(--color-primary);
+            border-radius: 20px;
+            padding: clamp(2rem, 5vw, 3rem);
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 80px rgba(0, 0, 0, 0.5);
+            position: relative;
+            animation: popIn 0.4s ease;
+        }
+
+        .component-modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--color-danger);
+            border: none;
+            color: white;
+            font-size: 1.8rem;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .component-modal-close:hover {
+            transform: rotate(90deg) scale(1.1);
+        }
+
+        .component-modal h2 {
+            font-family: 'Orbitron', monospace;
+            color: var(--color-primary);
+            font-size: clamp(1.5rem, 5vw, 2rem);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .component-modal p {
+            color: var(--text-secondary);
+            line-height: 1.9;
+            font-size: clamp(0.95rem, 2.5vw, 1.1rem);
+            text-align: justify;
+        }
+
+        footer {
+            background: var(--bg-card);
+            backdrop-filter: blur(15px);
+            border-top: 2px solid var(--color-primary);
+            padding: clamp(1.5rem, 3vw, 2rem);
+            text-align: center;
+            margin-top: 4rem;
+        }
+
+        footer p {
+            font-family: 'Orbitron', monospace;
+            color: var(--color-primary);
+            font-size: clamp(0.75rem, 2vw, 0.85rem);
+            margin: 0.5rem 0;
+        }
+
+        @media (max-width: 768px) {
+            .header-left {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .graph-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="tech-bg" id="techBg"></div>
+    
+    <div id="splash">
+        <div class="splash-logo">
+            <img src="assets/nawala.png" alt="Logo NAWALA">
+        </div>
+    </div>
+
+    <div class="announce-mute" id="announceMute" title="Mute/Unmute Announcement">🔊</div>
+
+    <audio id="bgMusic" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="auth-modal" id="loginModal">
+        <div class="auth-container">
+            <button class="close-modal" onclick="closeLoginModal()">&times;</button>
+            <h2>🔒 ADMIN LOGIN</h2>
+            <form onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>EMAIL</label>
+                    <input type="email" id="loginEmail" required placeholder="nawala@gmail.com">
+                </div>
+                <div class="form-group">
+                    <label>PASSWORD</label>
+                    <input type="password" id="loginPassword" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn">MASUK</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="fullscreen-modal" id="fullscreenModal">
+        <div class="fullscreen-close" onclick="closeFullscreen()">×</div>
+        <div class="fullscreen-content">
+            <div class="holo-card">
+                <h1 id="fsTitle" style="font-family: 'Orbitron', monospace; color: var(--color-primary); font-size: clamp(1.8rem, 5vw, 2.5rem); margin-bottom: 2rem; text-align: center;"></h1>
+                <img id="fsImage" style="width: 100%; height: auto; max-height: 400px; object-fit: cover; border-radius: 15px; margin-bottom: 2rem; border: 2px solid var(--color-primary);" alt="Info Image">
+                <p id="fsContent" style="font-size: clamp(1rem, 2.5vw, 1.2rem); line-height: 2; color: var(--text-secondary);"></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="component-modal" id="componentModal">
+        <div class="component-modal-content">
+            <button class="component-modal-close" onclick="closeComponentModal()">×</button>
+            <h2 id="componentTitle"></h2>
+            <p id="componentDescription"></p>
+        </div>
+    </div>
+
+    <div id="mainApp">
+        <header>
+            <div class="header-left">
+                <h1 class="site-title">NAWALA</h1>
+                <div class="logo-container">
+                    <div class="logo">
+                        <img src="assets/kemenag.png" alt="Logo Kemenag">
+                    </div>
+                    <div class="logo">
+                        <img src="assets/logom2kmr.png" alt="Logo MAN 2 Kota Malang">
+                    </div>
+                    <div class="logo">
+                        <img src="assets/nawala.png" alt="Logo NAWALA">
+                    </div>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="clock-display" id="clockDisplay">00:00:00</div>
+                <button class="menu-btn" onclick="toggleMenu()">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+            <div class="dropdown" id="dropdown">
+                <div class="admin-info" id="adminInfo" style="display: none;">
+                    <div class="admin-badge">ADMIN MODE</div>
+                </div>
+                
+                <div class="dropdown-item" onclick="showPage('beranda')">🏠 BERANDA</div>
+                <div class="dropdown-item" onclick="showPage('dashboard')">📊 DASHBOARD</div>
+                <div class="dropdown-item" onclick="showPage('statistik')">📈 STATISTIK</div>
+                <div class="dropdown-item" onclick="showPage('info')">ℹ️ INFORMASI</div>
+                <div class="dropdown-item" onclick="showPage('settings')">⚙️ PENGATURAN</div>
+                
+                <div class="dropdown-item" id="loginMenuItem" onclick="openLoginModal()">🔐 LOGIN</div>
+                <div class="dropdown-item" id="logoutMenuItem" style="display: none;" onclick="logout()">🚪 LOGOUT</div>
+            </div>
+        </header>
+
+        <div class="container">
+            <div id="beranda" class="page active">
+                <div class="welcome">
+                    <h1>Selamat Datang</h1>
+                    <h2>Website Monitoring Kualitas Udara NAWALA</h2>
+                    <p>Nusantara Air Watch and Lung Assistant</p>
+                </div>
+
+                <div class="holo-card" style="margin: 3rem 0; padding: clamp(2rem, 4vw, 3rem);">
+                    <h3 style="font-family: 'Orbitron', monospace; color: var(--color-primary); font-size: clamp(1.3rem, 4vw, 1.7rem); margin-bottom: 2rem; text-align: center;">TENTANG NAWALA</h3>
+                    <p style="font-size: clamp(1rem, 2.5vw, 1.15rem); line-height: 2; color: var(--text-secondary); text-align: justify;">
+                        NAWALA (Nusantara Air Watch and Lung Assistant) adalah teknologi lingkungan masa depan yang memadukan sistem filtrasi udara berbasis bagasse dengan kecerdasan IoT dan energi surya mandiri. Dirancang untuk ekosistem sekolah modern, NAWALA bekerja secara otomatis, adaptif, dan real-time dalam mendeteksi sekaligus mengurangi polusi PM2.5 serta gas berbahaya di udara.
+                    </p>
+                    <br>
+                    <p style="font-size: clamp(1rem, 2.5vw, 1.15rem); line-height: 2; color: var(--text-secondary); text-align: justify;">
+                        Ditenagai panel surya pintar dan exhaust fan adaptif, sistem ini secara dinamis menyesuaikan performanya terhadap tingkat polusi, menghadirkan solusi bersih, efisien, dan berkelanjutan. Lebih dari sekadar alat filtrasi, NAWALA merupakan platform edukasi digital yang menumbuhkan kesadaran ekologis generasi muda melalui data udara yang dapat dipantau langsung secara daring.
+                    </p>
+                </div>
+
+                <div id="deviceSection" style="margin-top: 5rem;">
+                    <div style="text-align: center; margin-bottom: 3rem;">
+                        <img src="assets/alatnawala.png" alt="Alat NAWALA Device" class="nawala-device" style="border-radius: 20px; box-shadow: 0 20px 60px var(--border-glow); border: 3px solid var(--color-primary);">
+                    </div>
+
+                    <div class="holo-card" style="margin-bottom: 3rem; padding: clamp(2rem, 4vw, 3rem);">
+                        <h3 style="font-family: 'Orbitron', monospace; color: var(--color-accent); font-size: clamp(1.3rem, 4vw, 1.7rem); margin-bottom: 1.5rem; text-align: center;">DESKRIPSI SISTEM</h3>
+                        <p style="font-size: clamp(1rem, 2.5vw, 1.15rem); line-height: 2; color: var(--text-secondary); text-align: justify;">
+                            NAWALA menggunakan media bagasse (ampas tebu) sebagai filter alami dan karbon aktif yang mampu menyerap PM₂.₅ dan CO₂ secara efisien. Sistem ini ditenagai panel surya sehingga dapat beroperasi mandiri tanpa listrik konvensional, dan terintegrasi dengan IoT (Internet of Things) untuk memantau kualitas udara secara real-time.
+                        </p>
+                        <br>
+                        <p style="font-size: clamp(1rem, 2.5vw, 1.15rem); line-height: 2; color: var(--text-secondary); text-align: justify;">
+                            Dilengkapi exhaust fan adaptif, NAWALA mampu menyesuaikan kecepatan kipas secara otomatis berdasarkan tingkat polusi yang terdeteksi oleh sensor PMS5003. Ketika kadar PM₂.₅ meningkat, sistem akan meningkatkan kecepatan filtrasi; ketika udara membaik, kipas melambat untuk menghemat energi.
+                        </p>
+                    </div>
+
+                    <h3 class="subtitle">⚙️ KOMPONEN SISTEM</h3>
+                    <div class="component-grid">
+                        <div class="component-card" onclick="showComponentInfo('ESP32')">
+                            <div class="component-icon">🖥️</div>
+                            <h3>ESP32</h3>
+                            <p>Microcontroller Unit (MCU)</p>
+                        </div>
+                        <div class="component-card" onclick="showComponentInfo('Panel Surya')">
+                            <div class="component-icon">☀️</div>
+                            <h3>PANEL SURYA</h3>
+                            <p>Sumber Energi Berkelanjutan</p>
+                        </div>
+                        <div class="component-card" onclick="showComponentInfo('Exhaust Fan')">
+                            <div class="component-icon">🌀</div>
+                            <h3>EXHAUST FAN</h3>
+                            <p>Sistem Sirkulasi Udara Adaptif</p>
+                        </div>
+                        <div class="component-card" onclick="showComponentInfo('Battery')">
+                            <div class="component-icon">🔋</div>
+                            <h3>BATTERY</h3>
+                            <p>Penyimpanan Energi NAWALA</p>
+                        </div>
+                        <div class="component-card" onclick="showComponentInfo('Solar Charge Controller')">
+                            <div class="component-icon">💨</div>
+                            <h3>SOLAR CHARGE CONTROLLER</h3>
+                            <p>Pengatur Tegangan Output dari Panel Surya</p>
+                        </div>
+                        <div class="component-card" onclick="showComponentInfo('Sensor PMS5003')">
+                            <div class="component-icon">🔬</div>
+                            <h3>SENSOR PMS5003</h3>
+                            <p>Sensor Laser Pengukur Kualitas PM2.5 di Udara</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="dashboard" class="page">
+                <h2 class="section-title">DASHBOARD</h2>
+                
+                <h3 class="subtitle">SEBELUM FILTRASI</h3>
+                <div class="dashboard-grid">
+                    <div class="holo-card metric-card">
+                        <h3>PM1 (µg/m³)</h3>
+                        <div class="chart-container">
+                            <canvas id="pm1Before"></canvas>
+                            <div class="metric-value" id="pm1BeforeValue">0</div>
+                        </div>
+                    </div>
+                    <div class="holo-card metric-card">
+                        <h3>PM2.5 (µg/m³)</h3>
+                        <div class="chart-container">
+                            <canvas id="pm25Before"></canvas>
+                            <div class="metric-value" id="pm25BeforeValue">0</div>
+                        </div>
+                    </div>
+                    <div class="holo-card metric-card">
+                        <h3>PM10 (µg/m³)</h3>
+                        <div class="chart-container">
+                            <canvas id="pm10Before"></canvas>
+                            <div class="metric-value" id="pm10BeforeValue">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="subtitle">SETELAH FILTRASI</h3>
+                <div class="dashboard-grid">
+                    <div class="holo-card metric-card">
+                        <h3>PM1 (µg/m³)</h3>
+                        <div class="chart-container">
+                            <canvas id="pm1After"></canvas>
+                            <div class="metric-value" id="pm1AfterValue">0</div>
+                        </div>
+                    </div>
+                    <div class="holo-card metric-card">
+                        <h3>PM2.5 (µg/m³)</h3>
+                        <div class="chart-container">
+                            <canvas id="pm25After"></canvas>
+                            <div class="metric-value" id="pm25AfterValue">0</div>
+                        </div>
+                    </div>
+                    <div class="holo-card metric-card">
+                        <h3>PM10 (µg/m³)</h3>
+                        <div class="chart-container">
+                            <canvas id="pm10After"></canvas>
+                            <div class="metric-value" id="pm10AfterValue">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="subtitle">EFEKTIVITAS FILTRASI PM2.5</h3>
+                <div class="holo-card">
+                    <div style="text-align: center; padding: clamp(1.5rem, 3vw, 2rem);">
+                        <div style="font-size: clamp(3rem, 10vw, 5rem); color: var(--color-success); font-weight: 900; font-family: 'Orbitron', monospace;" id="efektivitasDisplay">0%</div>
+                        <div style="font-size: clamp(1.2rem, 3vw, 1.5rem); color: var(--color-primary); font-family: 'Orbitron', monospace;">EFEKTIVITAS FILTRASI</div>
+                        <div class="chart-container" style="height: clamp(200px, 35vw, 250px); margin-top: 2rem;">
+                            <canvas id="efficiencyChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="controlCard" style="display: none;">
+                    <h3 class="subtitle">KONTROL</h3>
+                    <div class="holo-card">
+                        <div class="toggle-container">
+                            <h3>SISTEM NAWALA</h3>
+                            <div class="toggle-switch" id="systemToggle" onclick="toggleSystem()">
+                                <div class="toggle-slider"></div>
+                            </div>
+                            <div class="status-indicator" id="statusText">OFF</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="statistik" class="page">
+                <h2 class="section-title">STATISTIK</h2>
+                
+                <div class="graph-grid">
+                    <div class="holo-card">
+                        <h3>PM2.5 Sebelum Filtrasi</h3>
+                        <div class="graph-container"><canvas id="pm25TimeGraph"></canvas></div>
+                    </div>
+                    <div class="holo-card">
+                        <h3>EXHAUSTFAN </h3>
+                        <div class="graph-container"><canvas id="fanGraph"></canvas></div>
+                    </div>
+                    <div class="holo-card">
+                        <h3>PM2.5 Sesudah Filtrasi</h3>
+                        <div class="graph-container"><canvas id="pm25CompareGraph"></canvas></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="info" class="page">
+                <h2 class="section-title">INFORMASI</h2>
+                
+                <div class="info-grid">
+                    <div class="holo-card info-item" onclick="openFullscreen('Bahaya PM2.5', 'assets/pm25.png', 'Partikel PM2.5 berukuran 2.5 mikrometer dapat masuk ke paru-paru dan aliran darah. Paparan jangka panjang menyebabkan masalah pernapasan, penyakit jantung, dan mengurangi fungsi paru-paru. PM2.5 merupakan polutan paling berbahaya karena dapat menembus alveoli paru. Studi menunjukkan peningkatan 10 µg/m³ PM2.5 meningkatkan 6% risiko kematian dini. Di sekolah, paparan PM2.5 mengurangi konsentrasi belajar 15% dan meningkatkan absensi.')">
+                        <img src="assets/pm25.png" alt="PM2.5">
+                        <h3>BAHAYA PM2.5</h3>
+                        <p>Partikel berbahaya yang masuk ke paru-paru. Klik untuk info lengkap...</p>
+                    </div>
+
+                    <div class="holo-card info-item" onclick="openFullscreen('MAN 2 Kota Malang', 'assets/m2km.png', 'MAN 2 Kota Malang adalah madrasah yang berkomitmen pada pendidikan berkualitas dan lingkungan sehat. Dengan menerapkan teknologi NAWALA, sekolah ini menjadi pelopor dalam menjaga kualitas udara untuk mendukung pembelajaran optimal. Lingkungan belajar yang sehat meningkatkan produktivitas siswa dan menciptakan atmosfer yang kondusif bagi pengembangan akademik dan karakter.')">
+                        <img src="assets/m2km.png" alt="MAN 2 Kota Malang">
+                        <h3>MAN 2 KOTA MALANG</h3>
+                        <p>Madrasah pelopor lingkungan sehat. Klik untuk info...</p>
+                    </div>
+
+                    <div class="holo-card info-item" onclick="openFullscreen('Bagasse dan Karbon Aktif', 'assets/bgs.png', 'Bagasse (ampas tebu) adalah media filter alami yang ramah lingkungan. Dikombinasikan dengan karbon aktif, filter ini mampu menyerap PM2.5, CO2, dan gas berbahaya dengan efisiensi tinggi. Bagasse memiliki struktur berpori yang ideal untuk menangkap partikel halus, sementara karbon aktif dengan luas permukaan hingga 1000 m²/gram menyerap polutan kimia. Kombinasi ini menciptakan sistem filtrasi yang efektif, ekonomis, dan berkelanjutan.')">
+                        <img src="assets/bgs.png" alt="Bagasse">
+                        <h3>BAGASSE & KARBON AKTIF</h3>
+                        <p>Filter alami yang efektif dan ramah lingkungan. Klik untuk info...</p>
+                    </div>
+
+                    <div class="holo-card info-item" onclick="openFullscreen('Internet of Things (IoT)', 'assets/iot.png', 'Teknologi IoT memungkinkan monitoring kualitas udara secara real-time dari mana saja. Dengan sensor-sensor terhubung dan platform cloud, NAWALA menyediakan data akurat yang dapat diakses melalui web atau smartphone. Sistem ini memberikan notifikasi otomatis saat kualitas udara menurun, memungkinkan respons cepat. IoT juga memfasilitasi analisis data historis untuk mengidentifikasi pola dan mengoptimalkan performa sistem.')">
+                        <img src="assets/iot.png" alt="IoT">
+                        <h3>INTERNET OF THINGS</h3>
+                        <p>Monitoring real-time untuk udara bersih. Klik untuk info...</p>
+                    </div>
+
+                    <div class="holo-card info-item" onclick="openFullscreen('Inovasi NAWALA', 'assets/alatnawala.png', 'NAWALA mengintegrasikan berbagai teknologi canggih: filtrasi 5-layer dengan bagasse dan karbon aktif, sensor presisi PMS5003 dan MQ135, exhaust fan adaptif yang menyesuaikan kecepatan berdasarkan polusi, panel surya 200W untuk energi mandiri, dan sistem IoT dengan ESP32 untuk monitoring 24/7. Dengan efisiensi filtrasi 99.97% hingga partikel 0.1 mikron, NAWALA adalah solusi komprehensif untuk udara bersih di lingkungan sekolah.')">
+                        <img src="assets/alatnawala.png" alt="NAWALA">
+                        <h3>INOVASI NAWALA</h3>
+                        <p>Teknologi canggih untuk udara bersih masa depan. Klik untuk info...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="settings" class="page">
+                <h2 class="section-title">PENGATURAN</h2>
+                
+                <div class="settings-container">
+                    <div class="holo-card setting-item" style="flex-direction: column; align-items: stretch;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 1rem;">
+                            <div style="flex: 1;">
+                                <h3>🎵 MUSIK LATAR</h3>
+                                <p>Musik ambient dengan kontrol volume</p>
+                            </div>
+                            <div class="toggle-switch" id="musicToggle" onclick="toggleMusicSetting()">
+                                <div class="toggle-slider"></div>
+                            </div>
+                        </div>
+                        <div class="volume-control">
+                            <span style="color: var(--color-primary); font-size: 1.2rem;">🔉</span>
+                            <input type="range" min="0" max="100" value="50" class="volume-slider" id="volumeSlider" oninput="updateVolume(this.value)">
+                            <span class="volume-value" id="volumeValue">50%</span>
+                        </div>
+                    </div>
+
+                    <div class="holo-card setting-item">
+                        <div style="flex: 1;">
+                            <h3>🔔 NOTIFIKASI</h3>
+                            <p>Alert kualitas udara</p>
+                        </div>
+                        <div class="toggle-switch" id="notifToggle" onclick="toggleNotifications()">
+                            <div class="toggle-slider"></div>
+                        </div>
+                    </div>
+
+                    <div class="holo-card setting-item">
+                        <div style="flex: 1;">
+                            <h3>🌙 MODE GELAP</h3>
+                            <p>Tampilan gelap</p>
+                        </div>
+                        <div class="toggle-switch" id="darkToggle" onclick="toggleDarkMode()">
+                            <div class="toggle-slider"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>© 2025 Nusantara Air Watch and Lung Assistant</p>
+            <p>MAN 2 KOTA MALANG</p>
+        </footer>
+    </div>
+
+    <script>
+        let charts = {};
+        let isAdmin = false;
+        let musicEnabled = false;
+        let notificationsEnabled = false;
+        let darkMode = false;
+        let systemOn = false;
+        let announceMuted = false;
+        let currentPage = 'beranda';
+        
+        // Data storage
+        let spreadsheetData = [];
+        let currentDataIndex = 0;
+        let statistikDataPoints = [];
+        
+        const SPREADSHEET_URL = 'https://script.google.com/macros/s/AKfycbzQBFQH2wF51UoG6wiqBxRwY0yNgIzqesO7lvA-hxR1OmxH31ksPimWh_F8tq59whrB/exec';
+
+        // Fetch data from Google Spreadsheet
+        async function fetchSpreadsheetData() {
+            try {
+                const response = await fetch(SPREADSHEET_URL);
+                const jsonData = await response.json();
+                spreadsheetData = Array.isArray(jsonData) ? jsonData : (jsonData.data || []);
+                
+                // Filter valid data (rows 2-32)
+                spreadsheetData = spreadsheetData.filter(row => 
+                    row && row.Timestamp && 
+                    row.PM1_Sebelum !== undefined && 
+                    row.PM25_Sebelum !== undefined
+                );
+                
+                console.log('Data loaded:', spreadsheetData.length, 'rows');
+                
+                if (spreadsheetData.length > 0) {
+                    startRandomDataUpdate();
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+
+        // Get random data from spreadsheet
+        function getRandomData() {
+            if (spreadsheetData.length === 0) return null;
+            const randomIndex = Math.floor(Math.random() * spreadsheetData.length);
+            return spreadsheetData[randomIndex];
+        }
+
+        // Update dashboard with random data every 2 seconds
+        function startRandomDataUpdate() {
+            updateDashboardWithRandomData();
+            setInterval(updateDashboardWithRandomData, 2000);
+        }
+
+        function updateDashboardWithRandomData() {
+            const data = getRandomData();
+            if (!data) return;
+
+            // Update text values
+            document.getElementById('pm1BeforeValue').textContent = data.PM1_Sebelum || 0;
+            document.getElementById('pm25BeforeValue').textContent = data.PM25_Sebelum || 0;
+            document.getElementById('pm10BeforeValue').textContent = data.PM10_Sebelum || 0;
+            
+            document.getElementById('pm1AfterValue').textContent = data.PM1_Sesudah || 0;
+            document.getElementById('pm25AfterValue').textContent = data.PM25_Sesudah || 0;
+            document.getElementById('pm10AfterValue').textContent = data.PM10_Sesudah || 0;
+
+            // Update efektivitas
+            let efektivitas = parseFloat(data.Efektivitas) || 0;
+            document.getElementById('efektivitasDisplay').textContent = efektivitas + '%';
+
+            // Update doughnut charts
+            if (charts.pm1Before) {
+                charts.pm1Before.data.datasets[0].data = [
+                    parseFloat(data.PM1_Sebelum) || 0,
+                    Math.max(0, 100 - (parseFloat(data.PM1_Sebelum) || 0))
+                ];
+                charts.pm1Before.update('none');
+            }
+
+            if (charts.pm25Before) {
+                charts.pm25Before.data.datasets[0].data = [
+                    parseFloat(data.PM25_Sebelum) || 0,
+                    Math.max(0, 250 - (parseFloat(data.PM25_Sebelum) || 0))
+                ];
+                charts.pm25Before.update('none');
+            }
+
+            if (charts.pm10Before) {
+                charts.pm10Before.data.datasets[0].data = [
+                    parseFloat(data.PM10_Sebelum) || 0,
+                    Math.max(0, 350 - (parseFloat(data.PM10_Sebelum) || 0))
+                ];
+                charts.pm10Before.update('none');
+            }
+
+            if (charts.pm1After) {
+                charts.pm1After.data.datasets[0].data = [
+                    parseFloat(data.PM1_Sesudah) || 0,
+                    Math.max(0, 100 - (parseFloat(data.PM1_Sesudah) || 0))
+                ];
+                charts.pm1After.update('none');
+            }
+
+            if (charts.pm25After) {
+                charts.pm25After.data.datasets[0].data = [
+                    parseFloat(data.PM25_Sesudah) || 0,
+                    Math.max(0, 250 - (parseFloat(data.PM25_Sesudah) || 0))
+                ];
+                charts.pm25After.update('none');
+            }
+
+            if (charts.pm10After) {
+                charts.pm10After.data.datasets[0].data = [
+                    parseFloat(data.PM10_Sesudah) || 0,
+                    Math.max(0, 350 - (parseFloat(data.PM10_Sesudah) || 0))
+                ];
+                charts.pm10After.update('none');
+            }
+
+            // Update efficiency pie chart
+            if (charts.efficiency) {
+                charts.efficiency.data.datasets[0].data = [
+                    efektivitas,
+                    Math.max(0, 100 - efektivitas)
+                ];
+                charts.efficiency.update('none');
+            }
+        }
+
+        // Calculate 5-minute averages for statistics
+        function calculate5MinuteAverages() {
+            if (spreadsheetData.length === 0) return;
+
+            // Get 12 random samples (simulating 12 x 5-minute intervals = 1 hour)
+            const samples = [];
+            for (let i = 0; i < 12; i++) {
+                const randomSample = [];
+                // Get 3-5 random data points for each 5-minute interval
+                const sampleSize = Math.floor(Math.random() * 3) + 3;
+                for (let j = 0; j < sampleSize; j++) {
+                    randomSample.push(getRandomData());
+                }
+                samples.push(randomSample);
+            }
+
+            // Calculate averages
+            const pm25BeforeAvg = [];
+            const pm25AfterAvg = [];
+            const fanAvg = [];
+            const labels = [];
+
+            const currentHour = new Date().getHours();
+            
+            samples.forEach((sample, index) => {
+                const minute = index * 5;
+                labels.push(`${String(currentHour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`);
+                
+                // Calculate averages for this interval
+                const pm25Before = sample.reduce((sum, d) => sum + (parseFloat(d.PM25_Sebelum) || 0), 0) / sample.length;
+                const pm25After = sample.reduce((sum, d) => sum + (parseFloat(d.PM25_Sesudah) || 0), 0) / sample.length;
+                const fan = sample.reduce((sum, d) => sum + (parseFloat(d.Kipas) || 0), 0) / sample.length;
+                
+                pm25BeforeAvg.push(parseFloat(pm25Before.toFixed(2)));
+                pm25AfterAvg.push(parseFloat(pm25After.toFixed(2)));
+                fanAvg.push(parseFloat(fan.toFixed(2)));
+            });
+
+            // Update charts
+            if (charts.pm25Time) {
+                charts.pm25Time.data.labels = labels;
+                charts.pm25Time.data.datasets[0].data = pm25BeforeAvg;
+                charts.pm25Time.update('none');
+            }
+
+            if (charts.fan) {
+                charts.fan.data.labels = labels;
+                charts.fan.data.datasets[0].data = fanAvg;
+                charts.fan.update('none');
+            }
+
+            if (charts.pm25Compare) {
+                charts.pm25Compare.data.labels = labels;
+                charts.pm25Compare.data.datasets[0].data = pm25AfterAvg;
+                charts.pm25Compare.update('none');
+            }
+        }
+
+        // Start updating statistics charts
+        function startStatistikUpdate() {
+            calculate5MinuteAverages();
+            // Update every 5 seconds with new random data
+            setInterval(calculate5MinuteAverages, 5000);
+        }
+
+        const componentData = {
+            'ESP32': 'ESP32 adalah mikrokontroler dual-core 32-bit dengan Wi-Fi dan Bluetooth terintegrasi. Berfungsi sebagai otak sistem NAWALA yang mengontrol seluruh komponen, memproses data sensor, dan mengirimkan informasi ke cloud secara real-time. Dengan konsumsi daya rendah dan kemampuan IoT yang powerful, ESP32 memungkinkan monitoring jarak jauh dan otomasi sistem filtrasi udara.',
+            'Panel Surya': 'Panel surya berkapasitas 200W mengkonversi energi matahari menjadi listrik untuk mengoperasikan sistem NAWALA secara mandiri. Teknologi photovoltaic ini ramah lingkungan, mengurangi ketergantungan pada listrik PLN, dan memastikan operasi berkelanjutan. Efisiensi panel mencapai 20-22%, menghasilkan energi cukup untuk exhaust fan, sensor, dan sistem IoT sepanjang hari.',
+            'Exhaust Fan': 'Exhaust fan adaptif dengan kecepatan variabel 800-2000 RPM yang dapat menyesuaikan performa berdasarkan tingkat polusi terdeteksi. Saat PM2.5 tinggi, fan beroperasi maksimal untuk sirkulasi udara optimal. Ketika udara bersih, kecepatan melambat untuk efisiensi energi. Dilengkapi motor brushless yang tahan lama dan noise reduction technology untuk operasi senyap.',
+            'Battery': 'Baterai lithium-ion 12V 20Ah sebagai backup power yang menyimpan energi surplus dari panel surya. Memastikan sistem tetap beroperasi saat malam hari atau cuaca mendung. Battery Management System (BMS) melindungi dari overcharge dan deep discharge, memperpanjang umur baterai hingga 5+ tahun. Kapasitas cukup untuk 8-12 jam operasi tanpa sinar matahari.',
+            'Solar Charge Controller': 'Solar Charge Controller mengatur tegangan dan arus dari panel surya ke baterai, mencegah overcharging dan optimizing charging efficiency. Dilengkapi MPPT (Maximum Power Point Tracking) untuk ekstraksi energi maksimal dari panel surya dalam berbagai kondisi cahaya. Proteksi built-in melindungi sistem dari short circuit, reverse polarity, dan overvoltage.',
+            'Sensor PMS5003': 'Sensor laser PMS5003 mengukur konsentrasi partikel PM1.0, PM2.5, dan PM10 dengan akurasi tinggi menggunakan teknologi laser scattering. Mampu mendeteksi partikel sekecil 0.3 mikron dengan konsistensi data ±10%. Digital output via UART memudahkan integrasi dengan ESP32. Sensor ini adalah kunci monitoring polusi udara yang dapat memicu respons otomatis sistem NAWALA.'
+        };
+
+        const pageAnnouncements = {
+            'beranda': 'Selamat Datang di Website Monitoring Kualitas Udara NAWALA, Anda dapat memantau secara langsung berbagai informasi yaitu data kualitas udara, data statistika dan informasi lainnya',
+            'dashboard': 'Bagian Dashboard menampilkan data sebelum dan sesudah filtrasi udara, serta anda dapat mengetahui seberapa efektif teknologi Filtrasi NAWALA',
+            'statistik': 'Data statistik monitoring sistem NAWALA, anda dapat mengetahui fluktuasi data PM2.5, efektivitas filtrasi dan kecepatan exhaust fan',
+            'info': 'Informasi Penting terkait Latar Belakang Teknologi Filtrasi NAWALA, yaitu PM2.5 sebagai permasalahan lingkungan yang berdampak pada tempat belajar dan mengajar yakni man 2 kota malang, selain itu malang juga dihadapkan masalah limbah ampas tebu yang belum termanfaatkan, sehingga lahir NAWALA:teknologi filtrasi pm25 berbasis bagasse yang terintegrasi IoT serta ditenagai energi surya di MAN 2 Kota Malang'
+        };
+
+        const bgMusic = document.getElementById('bgMusic');
+
+        function updateVolume(value) {
+            bgMusic.volume = value / 100;
+            document.getElementById('volumeValue').textContent = value + '%';
+        }
+
+        function toggleMusicSetting() {
+            musicEnabled = !musicEnabled;
+            document.getElementById('musicToggle').classList.toggle('active', musicEnabled);
+            
+            if (musicEnabled) {
+                bgMusic.play().catch(e => console.log('Music autoplay prevented'));
+            } else {
+                bgMusic.pause();
+            }
+        }
+
+        function playAnnouncement(page) {
+            if (announceMuted) return;
+            
+            const text = pageAnnouncements[page];
+            if (!text) return;
+
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'id-ID';
+                utterance.rate = 0.9;
+                utterance.pitch = 1;
+                utterance.volume = 1;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        function toggleAnnounceMute() {
+            announceMuted = !announceMuted;
+            const btn = document.getElementById('announceMute');
+            btn.textContent = announceMuted ? '🔇' : '🔊';
+            btn.classList.toggle('muted', announceMuted);
+            
+            if (announceMuted && 'speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
+        }
+
+        document.getElementById('announceMute').addEventListener('click', toggleAnnounceMute);
+
+        function createBackgroundEffects() {
+            const bg = document.getElementById('techBg');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDuration = (Math.random() * 12 + 8) + 's';
+                particle.style.animationDelay = Math.random() * 5 + 's';
+                bg.appendChild(particle);
+            }
+        }
+
+        function updateClock() {
+            const now = new Date();
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            const s = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('clockDisplay').textContent = `${h}:${m}:${s}`;
+        }
+
+        function toggleNotifications() {
+            notificationsEnabled = !notificationsEnabled;
+            document.getElementById('notifToggle').classList.toggle('active', notificationsEnabled);
+        }
+
+        function toggleDarkMode() {
+            darkMode = !darkMode;
+            document.body.classList.toggle('dark-mode', darkMode);
+            document.getElementById('darkToggle').classList.toggle('active', darkMode);
+            updateChartColors();
+        }
+
+        function toggleMenu() {
+            document.getElementById('dropdown').classList.toggle('active');
+        }
+
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            currentPage = pageId;
+            toggleMenu();
+            
+            setTimeout(() => playAnnouncement(pageId), 300);
+        }
+
+        function openLoginModal() {
+            document.getElementById('loginModal').classList.add('active');
+            toggleMenu();
+        }
+
+        function closeLoginModal() {
+            document.getElementById('loginModal').classList.remove('active');
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            if (email === 'nawala@gmail.com' && password === 'nawala134') {
+                isAdmin = true;
+                document.getElementById('loginMenuItem').style.display = 'none';
+                document.getElementById('logoutMenuItem').style.display = 'block';
+                document.getElementById('adminInfo').style.display = 'block';
+                document.getElementById('controlCard').style.display = 'block';
+                closeLoginModal();
+                alert('✅ Login berhasil!');
+            } else {
+                alert('❌ Email atau password salah!\n\nEmail: nawala@gmail.com\nPassword: nawala134');
+            }
+        }
+
+        function logout() {
+            if (confirm('Logout dari admin mode?')) {
+                isAdmin = false;
+                document.getElementById('loginMenuItem').style.display = 'block';
+                document.getElementById('logoutMenuItem').style.display = 'none';
+                document.getElementById('adminInfo').style.display = 'none';
+                document.getElementById('controlCard').style.display = 'none';
+                showPage('beranda');
+            }
+            toggleMenu();
+        }
+
+        function toggleSystem() {
+            if (!isAdmin) {
+                alert('⚠️ Hanya admin yang dapat mengontrol sistem!');
+                return;
+            }
+            systemOn = !systemOn;
+            document.getElementById('systemToggle').classList.toggle('active', systemOn);
+            document.getElementById('statusText').textContent = systemOn ? 'ON' : 'OFF';
+        }
+
+        function openFullscreen(title, image, content) {
+            document.getElementById('fsTitle').textContent = title;
+            document.getElementById('fsImage').src = image;
+            document.getElementById('fsContent').textContent = content;
+            document.getElementById('fullscreenModal').classList.add('active');
+        }
+
+        function closeFullscreen() {
+            document.getElementById('fullscreenModal').classList.remove('active');
+        }
+
+        function showComponentInfo(componentName) {
+            document.getElementById('componentTitle').textContent = componentName;
+            document.getElementById('componentDescription').textContent = componentData[componentName];
+            document.getElementById('componentModal').classList.add('active');
+        }
+
+        function closeComponentModal() {
+            document.getElementById('componentModal').classList.remove('active');
+        }
+
+        function getChartColors() {
+            const isDark = document.body.classList.contains('dark-mode');
+            return {
+                primary: isDark ? '#00d4ff' : '#0288d1',
+                accent: isDark ? '#00ffaa' : '#00bcd4',
+                warning: '#ff9800',
+                danger: '#f44336',
+                success: '#4caf50',
+                text: isDark ? '#ffffff' : '#01579b',
+                grid: isDark ? 'rgba(0, 212, 255, 0.2)' : 'rgba(2, 136, 209, 0.15)'
+            };
+        }
+
+        function createDoughnutChart(canvasId, value, max, color) {
+            const ctx = document.getElementById(canvasId);
+            return new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    datasets: [{
+                        data: [value, max - value],
+                        backgroundColor: [color, 'rgba(200, 200, 200, 0.15)'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    cutout: '75%'
+                }
+            });
+        }
+
+        function initDashboardCharts() {
+            const c = getChartColors();
+            
+            charts.pm1Before = createDoughnutChart('pm1Before', 0, 100, c.danger);
+            charts.pm25Before = createDoughnutChart('pm25Before', 0, 250, c.danger);
+            charts.pm10Before = createDoughnutChart('pm10Before', 0, 350, c.danger);
+            
+            charts.pm1After = createDoughnutChart('pm1After', 0, 100, c.success);
+            charts.pm25After = createDoughnutChart('pm25After', 0, 250, c.success);
+            charts.pm10After = createDoughnutChart('pm10After', 0, 350, c.success);
+
+            const effCtx = document.getElementById('efficiencyChart');
+            if (effCtx) {
+                charts.efficiency = new Chart(effCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: ['Tersaring', 'Tidak Tersaring'],
+                        datasets: [{
+                            data: [0, 100],
+                            backgroundColor: [c.success, c.danger],
+                            borderWidth: 2,
+                            borderColor: c.primary
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    color: c.text,
+                                    font: { family: "'Orbitron', monospace", size: 12 }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        function initGraphCharts() {
+            const c = getChartColors();
+
+            const commonOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: c.text,
+                            font: { family: "'Orbitron', monospace" }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: c.grid },
+                        ticks: { color: c.text }
+                    },
+                    x: {
+                        grid: { color: c.grid },
+                        ticks: { color: c.text }
+                    }
+                }
+            };
+
+            charts.pm25Time = new Chart(document.getElementById('pm25TimeGraph'), {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'PM2.5 Sebelum (µg/m³)',
+                        data: [],
+                        borderColor: c.danger,
+                        backgroundColor: c.danger + '30',
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 3
+                    }]
+                },
+                options: commonOptions
+            });
+
+            charts.fan = new Chart(document.getElementById('fanGraph'), {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Kipas (RPM)',
+                        data: [],
+                        borderColor: c.primary,
+                        backgroundColor: c.primary + '30',
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 3
+                    }]
+                },
+                options: commonOptions
+            });
+
+            charts.pm25Compare = new Chart(document.getElementById('pm25CompareGraph'), {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'PM2.5 Sesudah (µg/m³)',
+                        data: [],
+                        borderColor: c.success,
+                        backgroundColor: c.success + '30',
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 3
+                    }]
+                },
+                options: commonOptions
+            });
+        }
+
+        function updateChartColors() {
+            const c = getChartColors();
+            Object.keys(charts).forEach(key => {
+                const chart = charts[key];
+                if (chart && chart.options.scales) {
+                    if (chart.options.scales.y) {
+                        chart.options.scales.y.grid.color = c.grid;
+                        chart.options.scales.y.ticks.color = c.text;
+                    }
+                    if (chart.options.scales.x) {
+                        chart.options.scales.x.grid.color = c.grid;
+                        chart.options.scales.x.ticks.color = c.text;
+                    }
+                }
+                if (chart && chart.options.plugins && chart.options.plugins.legend) {
+                    chart.options.plugins.legend.labels.color = c.text;
+                }
+                chart.update();
+            });
+        }
+
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('dropdown');
+            const menuBtn = document.querySelector('.menu-btn');
+            const loginModal = document.getElementById('loginModal');
+            const componentModal = document.getElementById('componentModal');
+            
+            if (dropdown && menuBtn && !dropdown.contains(event.target) && !menuBtn.contains(event.target)) {
+                dropdown.classList.remove('active');
+            }
+            
+            if (loginModal && loginModal.classList.contains('active') && event.target === loginModal) {
+                closeLoginModal();
+            }
+
+            if (componentModal && componentModal.classList.contains('active') && event.target === componentModal) {
+                closeComponentModal();
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeLoginModal();
+                closeFullscreen();
+                closeComponentModal();
+                document.getElementById('dropdown').classList.remove('active');
+            }
+        });
+
+        window.addEventListener('load', function() {
+            createBackgroundEffects();
+            setInterval(updateClock, 1000);
+            updateClock();
+            
+            setTimeout(() => {
+                initDashboardCharts();
+                initGraphCharts();
+                
+                // Fetch data and start updates
+                fetchSpreadsheetData();
+                startStatistikUpdate();
+                
+                playAnnouncement('beranda');
+            }, 2500);
+
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -100px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const device = entry.target.querySelector('.nawala-device');
+                        const componentGrid = entry.target.querySelector('.component-grid');
+                        
+                        if (device && !device.classList.contains('visible')) {
+                            setTimeout(() => {
+                                device.classList.add('visible');
+                            }, 300);
+                        }
+                        
+                        if (componentGrid && !componentGrid.classList.contains('visible')) {
+                            setTimeout(() => {
+                                componentGrid.classList.add('visible');
+                            }, 800);
+                        }
+                    }
+                });
+            }, observerOptions);
+
+            const deviceSection = document.getElementById('deviceSection');
+            if (deviceSection) {
+                observer.observe(deviceSection);
+            }
+        });
+    </script>
+</body>
+</html>
